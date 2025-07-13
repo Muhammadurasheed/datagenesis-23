@@ -25,8 +25,9 @@ export const useWebSocket = (url: string, options: UseWebSocketOptions = {}) => 
 
   const connect = () => {
     try {
-      // Convert relative URL to absolute WebSocket URL with correct port
+      // Convert relative URL to absolute WebSocket URL with correct port  
       const wsUrl = url.startsWith('ws') ? url : `ws://localhost:8000/ws/${url}`;
+      console.log('🔌 Connecting to WebSocket:', wsUrl);
       ws.current = new WebSocket(wsUrl);
 
       ws.current.onopen = () => {
@@ -38,11 +39,24 @@ export const useWebSocket = (url: string, options: UseWebSocketOptions = {}) => 
 
       ws.current.onmessage = (event) => {
         try {
-          const message: WebSocketMessage = JSON.parse(event.data);
+          console.log('📨 WebSocket message received:', event.data);
+          const message: WebSocketMessage = {
+            type: 'generation_update',
+            data: typeof event.data === 'string' ? JSON.parse(event.data) : event.data,
+            timestamp: Date.now()
+          };
           setLastMessage(message);
           options.onMessage?.(message);
         } catch (err) {
-          console.error('Failed to parse WebSocket message:', err);
+          console.error('Failed to parse WebSocket message:', err, event.data);
+          // Try to handle raw string messages
+          const fallbackMessage: WebSocketMessage = {
+            type: 'raw_message',
+            data: { message: event.data },
+            timestamp: Date.now()
+          };
+          setLastMessage(fallbackMessage);
+          options.onMessage?.(fallbackMessage);
         }
       };
 

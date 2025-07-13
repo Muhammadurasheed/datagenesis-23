@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
 import { AuthService } from '../lib/auth';
 import { useStore } from '../store/useStore';
+import { GoogleAuth } from './auth/GoogleAuth';
 import toast from 'react-hot-toast';
 
 interface AuthModalProps {
@@ -182,8 +183,24 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               </button>
             </form>
 
+            <div className="mt-6 space-y-4">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-600"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-gray-800 text-gray-400">or</span>
+                </div>
+              </div>
+
+              <GoogleAuth 
+                onSuccess={() => onClose()}
+                onError={(error) => toast.error(error)}
+              />
+            </div>
+
             <button
-              className="text-sm text-gray-400 hover:text-gray-300 mt-4"
+              className="text-sm text-gray-400 hover:text-gray-300 mt-4 block w-full text-center"
               onClick={() => setIsLogin(!isLogin)}
             >
               {isLogin ? 'Need an account? Register' : 'Already have an account? Login'}

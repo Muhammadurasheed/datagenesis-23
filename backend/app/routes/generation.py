@@ -417,14 +417,18 @@ async def generate_local_data(
         orchestrator = AgentOrchestrator()
         await orchestrator.initialize()
         
-        # Use orchestrator which handles AI service fallbacks internally
+        # Import WebSocket manager for real-time updates
+        from ..services.websocket_manager import ConnectionManager
+        from ..main import websocket_manager
+        
+        # Use orchestrator with WebSocket support for real-time monitoring
         result = await orchestrator.orchestrate_generation(
             job_id=job_id,
             source_data=source_data,
             schema=schema,
             config=config,
             description=description,
-            websocket_manager=None  # WebSocket not available in sync generation
+            websocket_manager=websocket_manager  # Enable real-time updates
         )
         
         logger.info(f"✅ Multi-agent generation completed: {len(result.get('data', []))} records")

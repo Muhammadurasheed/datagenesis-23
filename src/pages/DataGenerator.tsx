@@ -5,7 +5,7 @@ import { useStore } from '../store/useStore';
 import { ApiService } from '../lib/api';
 import { useWebSocket } from '../hooks/useWebSocket';
 import { useModel } from '../components/ModelProvider';
-  import { RealTimeActivityLogger } from '../components/RealTimeActivityLogger';
+  import RealTimeActivityMonitor from '../components/RealTimeActivityMonitor';
   import { DataReviewEditor } from '../components/data/DataReviewEditor';
   import { 
     Database, 
@@ -938,9 +938,11 @@ const DataGenerator: React.FC = () => {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.9 }}
         >
-          <RealTimeActivityLogger 
+          <RealTimeActivityMonitor 
             isGenerating={isGenerating}
             maxLogs={50}
+            isCollapsible={true}
+            isDraggable={true}
           />
         </motion.div>
       )}
@@ -976,6 +978,12 @@ const DataGenerator: React.FC = () => {
                     ...prev,
                     data: newData
                   }));
+                }}
+                metadata={{
+                  rowsGenerated: generatedData.data?.length || 0,
+                  qualityScore: generatedData.quality_score || 0,
+                  privacyScore: generatedData.privacy_score || 0,
+                  biasScore: generatedData.bias_score || 0
                 }}
               />
             </div>
